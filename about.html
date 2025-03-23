@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About Us - Health Analysis</title>
+
+    <!-- Same CSS and library imports as your landing page -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+    />
+    <link rel="stylesheet" href="Styling/landing.css" />
+    <link rel="stylesheet" href="Styling/about.css" />
+  </head>
+  <body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+      <div class="loader"></div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <div class="scroll-to-top">
+      <i class="fa fa-angle-up"></i>
+    </div>
+
+    <!-- Header Section Start - Same as landing page -->
+    <div class="header_section">
+      <div
+        class="container-fluid d-flex justify-content-between align-items-center"
+      >
+        <div class="logo">
+          <a href="landing.html"><img src="images/Logo2.png" alt="Logo" /></a>
+        </div>
+
+        <!-- About Us button -->
+        <div class="d-none d-md-block">
+          <a href="report.html" class="analyze-btn">Analyze</a>
+          <a href="about.html" class="about-us-btn">About Us</a>
+        </div>
+
+        <!-- Mobile Menu Icon -->
+        <span class="d-md-none" onclick="openNav()">
+          <i class="fa fa-bars fa-lg" style="color: #5e17eb"></i>
+        </span>
+      </div>
+      <!-- Overlay Navigation for Mobile -->
+      <div id="myNav" class="overlay">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <div class="overlay-content">
+          <a href="landing.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="#">Services</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+    </div>
+    <!-- Header Section End -->
+
+    <!-- About Section Start -->
+    <div class="about-section">
+      <div class="glow-accent pulse-animation" style="top: 30%; left: 5%"></div>
+      <div
+        class="glow-accent pulse-animation"
+        style="bottom: 30%; right: 5%"
+      ></div>
+
+      <div class="container">
+        <div class="row">
+          <!-- Left Side: Your Photo -->
+          <div class="col-lg-5" data-aos="fade-right" data-aos-duration="1000">
+            <div class="about-image">
+              <img src="images/my_photo.jpeg" alt="Vedant Narawadkar" />
+            </div>
+            <div class="container text-center mt-5">
+              <a
+                href="https://www.linkedin.com/in/vedantn/"
+                class="analyze-btn"
+                target="_blank"
+                >LinkedIn</a
+              >
+              <a
+                href="https://github.com/naiveman04/"
+                class="about-us-btn"
+                target="_blank"
+                >GitHub</a
+              >
+            </div>
+            <div class="highlight-box">
+              <p>
+                "1 in 3 adults are unaware they have high blood pressure — often
+                called the 'silent killer'."
+              </p>
+              <br />
+              <p>
+                "Over 60% of gym-goers follow diet trends without understanding
+                how they truly impact their body."
+              </p>
+            </div>
+          </div>
+
+          <!-- Right Side: About Content -->
+          <div class="col-lg-7" data-aos="fade-left" data-aos-duration="1000">
+            <div class="about-content">
+              <h2 class="section-title">About Me</h2>
+
+              <p class="about-text">
+                Welcome to Vitals IQ! I'm Vedant Narawadkar, an electronics
+                engineer, with a passion for making healthcare more accessible
+                and understandable.
+              </p>
+
+              <div class="highlight-box">
+                <p>
+                  "The greatest wealth is health. My mission is to help everyone
+                  understand their health data and make informed decisions."
+                </p>
+              </div>
+
+              <h3 class="section-subtitle">My Background</h3>
+              <p class="about-text">
+                I have 3 years of experience in healthcare, general fitness; and
+                1 year in web development and ML. My educational background
+                includes being an Electronics engineer, which has equipped me
+                with the knowledge and skills to create this platform.
+              </p>
+              <p class="about-text">
+                Throughout my fitness journey, I've observed people's difficulty
+                in understanding medical reports, not caring about personal
+                health, and lack of accessible health information. For this
+                reason, I decided to build a project which would help people
+                read and understand the health reports which get no attention.
+              </p>
+
+              <h3 class="section-subtitle">Motivation Behind This Project</h3>
+              <p class="about-text">
+                I realized that many people face challenges in understanding
+                their health reports and making sense of medical jargon. My goal
+                is to bridge the gap between complex medical data and the
+                average person, empowering individuals to take control of their
+                health through knowledge and understanding.
+              </p>
+
+              <p class="about-text">
+                I envision a world where everyone has the tools to understand
+                their health status and make informed decisions about their
+                wellbeing. This platform aims to demystify medical reports and
+                provide actionable insights in a user-friendly manner.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="row mt-5" data-aos="fade-up" data-aos-duration="1000">
+          <div class="col-12">
+            <h2 class="section-title">Benefits of This Project</h2>
+          </div>
+
+          <!-- Benefit Card 1 -->
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="benefit-card">
+              <i class="fas fa-heartbeat"></i>
+              <h3>Early Health Issue Detection</h3>
+              <p>
+                Identify potential health concerns before they become serious
+                problems through regular monitoring and analysis of your health
+                data.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit Card 2 -->
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="benefit-card">
+              <i class="fas fa-brain"></i>
+              <h3>Medical Jargon Translation</h3>
+              <p>
+                Transform complex medical terminology into plain, understandable
+                language that helps you make sense of your health reports.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit Card 3 -->
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="benefit-card">
+              <i class="fas fa-chart-line"></i>
+              <h3>Personalized Health Insights</h3>
+              <p>
+                Receive tailored recommendations based on your health data to
+                improve your overall wellbeing and quality of life.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit Card 4 -->
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="benefit-card">
+              <i class="fas fa-users"></i>
+              <h3>Community Support</h3>
+              <p>
+                Join a community of health-conscious individuals sharing
+                experiences and knowledge about managing their health
+                effectively.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit Card 5 -->
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+            <div class="benefit-card">
+              <i class="fas fa-shield-alt"></i>
+              <h3>Preventive Healthcare</h3>
+              <p>
+                Focus on prevention rather than cure by staying informed about
+                your health status and taking proactive measures.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit Card 6 -->
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+            <div class="benefit-card">
+              <i class="fas fa-hand-holding-heart"></i>
+              <h3>Empowered Decision Making</h3>
+              <p>
+                Make informed decisions about your health and treatment options
+                based on clear understanding of your medical data.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- About Section End -->
+
+    <!-- Footer Section Start - Same as landing page -->
+    <div class="footer_section">
+      <div class="container">
+        <div class="row">
+          <div
+            class="col-lg-3 col-sm-6"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <h2 class="useful_text">Resources</h2>
+            <ul>
+              <li>
+                <a href="#" class="resource-link"
+                  >What we do
+                  <div class="resource-popup">
+                    <span class="popup-text"
+                      >We provide comprehensive health analysis and
+                      recommendations based on your medical reports to help you
+                      take control of your well-being.</span
+                    >
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="resource-link"
+                  >Media
+                  <div class="resource-popup">
+                    <span class="popup-text"
+                      >Browse our collection of health articles, videos, and
+                      infographics designed to educate and empower you on your
+                      health journey.</span
+                    >
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div
+            class="col-lg-3 col-sm-6"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            <h2 class="useful_text">About</h2>
+            <p class="footer_text">
+              Discover our mission to enhance your health and quality of life
+              with timely checkups and expert advice.
+            </p>
+          </div>
+          <div
+            class="col-lg-3 col-sm-6"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            <h2 class="useful_text">Contact Us</h2>
+            <ul class="location_text">
+              <li>
+                <i class="fa fa-map-marker" aria-hidden="true"></i> Pune,
+                Maharashtra
+              </li>
+              <li>
+                <i class="fa fa-phone" aria-hidden="true"></i> +91 9502772952
+              </li>
+              <li>
+                <i class="fa fa-envelope" aria-hidden="true"></i> abc@gmail.com
+              </li>
+            </ul>
+          </div>
+          <div
+            class="col-lg-3 col-sm-6"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
+            <h2 class="useful_text">Countries</h2>
+            <img src="images/map.png" alt="Map" class="img-fluid" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer Section End -->
+
+    <!-- Copyright Section Start -->
+    <div class="copyright_section">
+      <div class="container">
+        <p>© 2025 All Rights Reserved.</p>
+      </div>
+    </div>
+    <!-- Copyright Section End -->
+
+    <!-- Javascript Files -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script src="Functionality/about.js"></script>
+  </body>
+</html>

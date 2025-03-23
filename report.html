@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Health Report Analysis - Health Analysis</title>
+
+  <!-- CSS and library imports -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+  <link rel="stylesheet" href="Styling/landing.css">
+  <link rel="stylesheet" href="Styling/report.css">
+</head>
+
+<body>
+  <!-- Page Loader -->
+  <div class="page-loader">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <div class="scroll-to-top">
+    <i class="fa fa-angle-up"></i>
+  </div>
+
+  <!-- Copy Alert Notification -->
+  <div class="copy-alert" id="copyAlert">
+    <i class="fas fa-check-circle"></i> Copied to clipboard!
+  </div>
+
+  <!-- Header Section Start - Same as landing page -->
+  <div class="header_section">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <div class="logo">
+        <a href="landing.html"><img src="images/Logo2.png" alt="Logo"></a>
+      </div>
+
+      <!-- About Us button -->
+      <div class="d-none d-md-block">
+        <a href="report.html" class="analyze-btn">Analyze</a>
+        <a href="about.html" class="about-us-btn">About Us</a>
+      </div>
+
+      <!-- Mobile Menu Icon -->
+      <span class="d-md-none" onclick="openNav()">
+        <i class="fa fa-bars fa-lg" style="color: #5e17eb;"></i>
+      </span>
+    </div>
+    <!-- Overlay Navigation for Mobile -->
+    <div id="myNav" class="overlay">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+      <div class="overlay-content">
+        <a href="landing.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="#">Services</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+  <!-- Header Section End -->
+
+  <!-- Report Section Start -->
+  <div class="report-section">
+    <div class="glow-accent pulse-animation" style="top: 30%; left: 5%;"></div>
+    <div class="glow-accent pulse-animation" style="bottom: 30%; right: 5%;"></div>
+
+    <div class="container">
+      <div class="row">
+        <!-- Report Content -->
+        <div class="col-lg-12" data-aos="fade-up" data-aos-duration="1000">
+          <h2 class="section-title">Health Report Analysis</h2>
+
+          <h3 class="section-subtitle">Upload Your Report</h3>
+          <div class="report-card">
+            <form id="uploadForm">
+              <div class="form-group">
+                <label for="reportFile">Upload Health Report (PDF/Image)</label>
+                <input type="file" class="form-control-file" id="reportFile">
+                <small class="form-text text-muted" style="color: rgba(255,255,255,0.6) !important;">Supported formats:
+                  PDF, JPG,
+                  PNG</small>
+              </div>
+              <button type="button" id="uploadAnalyzeBtn" class="analyze-report-btn">Upload &
+                Analyze</button>
+            </form>
+          </div>
+
+          <h3 class="section-subtitle">Enter Health Parameters Manually</h3>
+          <div class="report-card">
+            <form id="manualForm">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="bloodPressure">Blood Pressure (mmHg)</label>
+                    <input type="text" class="form-control" id="bloodPressure" placeholder="e.g., 120/80">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="glucose">Blood Glucose (mg/dL)</label>
+                    <input type="number" class="form-control" id="glucose" placeholder="e.g., 95">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="hemoglobin">Hemoglobin (g/dL)</label>
+                    <input type="number" class="form-control" id="hemoglobin" placeholder="e.g., 15.5">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="cholesterol">Total Cholesterol (mg/dL)</label>
+                    <input type="number" class="form-control" id="cholesterol" placeholder="e.g., 180">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="hdl">HDL Cholesterol (mg/dL)</label>
+                    <input type="number" class="form-control" id="hdl" placeholder="e.g., 60">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="ldl">LDL Cholesterol (mg/dL)</label>
+                    <input type="number" class="form-control" id="ldl" placeholder="e.g., 100">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="wbc">White Blood Cells (WBCs) (cells/μL)</label>
+                    <input type="number" class="form-control" id="wbc" placeholder="e.g., 7,500">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="platelets">Platelets (cells/μL)</label>
+                    <input type="number" step="0.1" class="form-control" id="platelets" placeholder="e.g., 3,50,000">
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" id="analyzeParamsBtn" class="analyze-report-btn">Analyze
+                Parameters</button>
+            </form>
+          </div>
+
+          <!-- Output Section (Initially Hidden) -->
+          <div id="outputSection" class="output-section">
+            <h3 class="section-subtitle">Analysis Results</h3>
+            <div class="output-card">
+              <div class="output-header">
+                <h4 class="output-title">Your Health Report Analysis</h4>
+                <div class="output-actions">
+                  <button id="copyBtn" class="action-btn">
+                    <i class="fas fa-copy"></i> Copy
+                  </button>
+                  <button id="downloadPdfBtn" class="action-btn">
+                    <i class="fas fa-file-download"></i> Download PDF
+                  </button>
+                </div>
+              </div>
+              <div class="output-content" id="analysisContent">
+                <!-- Content will be dynamically populated via JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <br>
+          <p class="report-text">
+            Welcome to the Health Report Analysis tool by Vitals IQ. This powerful tool helps you understand
+            your medical reports in simple language, identify potential health concerns, and get
+            personalized recommendations.
+          </p>
+
+          <div class="highlight-box">
+            <p>"Your health data tells a story. We help you understand that story and make informed
+              decisions for a healthier future."</p>
+          </div>
+
+          <h3 class="section-subtitle">How It Works</h3>
+          <p class="report-text">
+            Our advanced algorithms analyze your health reports and translate complex medical terminology
+            into clear, actionable insights. By understanding the patterns and correlations in your data, we
+            can help you identify potential health issues before they become serious problems.
+          </p>
+          <p class="report-text">
+            Simply upload your health report or manually enter your health parameters below, and our system
+            will generate a comprehensive analysis with personalized recommendations tailored to your unique
+            health profile.
+          </p>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+  </div>
+  <!-- Report Section End -->
+
+  <!-- Footer Section Start - Same as landing page -->
+  <div class="footer_section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+          <h2 class="useful_text">Resources</h2>
+          <ul>
+            <li>
+              <a href="#" class="resource-link">What we do
+                <div class="resource-popup">
+                  <span class="popup-text">We provide comprehensive health analysis and
+                    recommendations based on your medical reports to help you take control of your
+                    well-being.</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="resource-link">Media
+                <div class="resource-popup">
+                  <span class="popup-text">Browse our collection of health articles, videos, and
+                    infographics designed to educate and empower you on your health journey.</span>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+          <h2 class="useful_text">About</h2>
+          <p class="footer_text">Discover our mission to enhance your health and quality of life with timely
+            checkups and expert advice.</p>
+        </div>
+        <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="300">
+          <h2 class="useful_text">Contact Us</h2>
+          <ul class="location_text">
+            <li><i class="fa fa-map-marker" aria-hidden="true"></i> Pune, Maharashtra</li>
+            <li><i class="fa fa-phone" aria-hidden="true"></i> +91 9502772952</li>
+            <li><i class="fa fa-envelope" aria-hidden="true"></i> abc@gmail.com</li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="400">
+          <h2 class="useful_text">Countries</h2>
+          <img src="images/map.png" alt="Map" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer Section End -->
+
+  <!-- Copyright Section Start -->
+  <div class="copyright_section">
+    <div class="container">
+      <p>© 2025 All Rights Reserved.</p>
+    </div>
+  </div>
+  <!-- Copyright Section End -->
+
+  <!-- Javascript Files -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Link to your custom JavaScript file -->
+  <script src="Functionality/report.js"></script>
+</body>
+
+</html>
