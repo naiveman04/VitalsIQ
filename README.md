@@ -6,7 +6,7 @@
 ## Features  
 - 📄 **OCR-Based Report Extraction**: Uses **Marker OCR** to extract key health metrics from uploaded medical reports.  
 - 🧠 **AI-Powered Health Insights**: Integrates **two Gemini APIs** to analyze extracted data and provide intelligent health assessments.  
-- 📊 **Health Parameter Analysis**: Supports health data processing using **Pandas** for structuring and extracting meaningful insights.  
+- 📊 **Health Parameter Analysis**: Supports health data processing using **Gemini API** for structuring and extracting meaningful insights.  
 - 🌐 **Web-Based Interface**: A simple yet effective front-end built with **HTML, CSS, and JavaScript** for user interaction.  
 
 ## Pages  
@@ -17,15 +17,14 @@ The **VitalsIQ** web application consists of three main pages:
 
 ## Technologies Used  
 - **Languages**: Python, JavaScript, HTML, CSS  
-- **Data Processing**: Pandas  
 - **OCR & AI**: Marker OCR, Gemini APIs  
 - **Web Development**: Flask (or any backend framework used)  
 
 ## How It Works  
 1. **User Uploads a Medical Report**: The system accepts scanned reports or images as input.  
 2. **OCR Extraction**: **Marker OCR** processes the document, extracting key health parameters.  
-3. **Data Processing**: The extracted data is formatted and structured using **Pandas** for further analysis.  
-4. **AI-Powered Insights**: The **Gemini APIs** analyze trends, assess potential risks, and provide health recommendations.  
+3. **Data Processing**: The extracted data is formatted and structured using **Gemini API 1** for further analysis.  
+4. **AI-Powered Insights**: The **Gemini API 2** analyzes trends, assess potential risks, and provide health recommendations.  
 5. **Results Display**: The web interface presents users with their analyzed health data and AI-generated insights.  
 
 ## Installation & Setup  
