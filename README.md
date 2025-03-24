@@ -1,7 +1,7 @@
 # VitalsIQ - ML Health Analyzer
 
 ## Overview  
-**VitalsIQ** is a machine learning-powered health analysis system that extracts medical data from user-uploaded reports and provides AI-driven insights. The project leverages **Tesseract OCR** for text extraction and **Gemini APIs** for intelligent health assessments. It aims to assist users in understanding their health parameters and detecting potential risks.
+**VitalsIQ** is a machine learning-powered health analysis system that extracts medical data from user-uploaded reports and provides AI-driven insights. The project leverages **Marker OCR** for text extraction and **Gemini APIs** for intelligent health assessments. It aims to assist users in understanding their health parameters and detecting potential risks.
 
 ## Features  
 - 📄 **OCR-Based Report Extraction**: Uses **Marker OCR** to extract key health metrics from uploaded medical reports.  
