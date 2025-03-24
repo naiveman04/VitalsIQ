@@ -40,21 +40,267 @@ $(".scroll-to-top").click(function () {
   return false;
 });
 
-// Upload & Analyze button functionality
-document
-  .getElementById("uploadAnalyzeBtn")
-  .addEventListener("click", function () {
+
+async function handlePdfUpload() {
+  const fileInput = document.getElementById('pdfFileInput');
+  
+  if (!fileInput) {
+    console.error("PDF input element not found!");
+    return;
+  }
+  
+  if (fileInput.files.length === 0) {
+    alert('Please select a PDF file to upload');
+    return;
+  }
+  
+  const file = fileInput.files[0];
+  if (!file.name.toLowerCase().endsWith('.pdf')) {
+    alert('Please upload a PDF file');
+    return;
+  }
+  
+  try {
     // Show output section
     document.getElementById("outputSection").style.display = "block";
-
+    
+    // Create parameter analysis section with a loading message
+    document.getElementById("analysisContent").innerHTML = `
+      <h3>Parameter Analysis</h3>
+      <p>Extracting data from your PDF. Please wait...</p>
+      <div class="gemini-response-section">
+        <h3 id="analysisTitle">Health Analysis</h3>
+        <p id="connectingMessage">Uploading and processing your PDF report...</p>
+        <div id="geminiResponse" class="gemini-response">
+          <div class="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+          </div>
+        </div>
+      </div>
+    `;
+    
     // Scroll to output section
-    $("html, body").animate(
-      {
-        scrollTop: $("#outputSection").offset().top - 100,
-      },
-      800
-    );
-  });
+    await new Promise(resolve => {
+      $("html, body").animate(
+        {
+          scrollTop: $("#outputSection").offset().top - 100,
+        },
+        800,
+        resolve
+      );
+    });
+    
+    // Send the PDF to the backend
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch('http://localhost:5000/upload_report', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Received data from PDF processing:", data);
+    
+    // Hide connecting message
+    document.getElementById("connectingMessage").style.display = "none";
+    
+    // Create parameter analysis section with extracted parameters
+    const parametersContent = `
+      <h3>Parameter Analysis</h3>
+      <div class="parameter-row">
+          <span class="parameter-name">Blood Pressure:</span>
+          <span class="parameter-value">${data.bloodPressure || 'Not Provided'} mmHg</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">Blood Glucose:</span>
+          <span class="parameter-value">${data.glucose || 'Not Provided'} mg/dL</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">Hemoglobin:</span>
+          <span class="parameter-value">${data.hemoglobin || 'Not Provided'} g/dL</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">Total Cholesterol:</span>
+          <span class="parameter-value">${data.cholesterol || 'Not Provided'} mg/dL</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">HDL Cholesterol:</span>
+          <span class="parameter-value">${data.hdl || 'Not Provided'} mg/dL</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">LDL Cholesterol:</span>
+          <span class="parameter-value">${data.ldl || 'Not Provided'} mg/dL</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">White Blood Cell Count:</span>
+          <span class="parameter-value">${data.wbc || 'Not Provided'} cells/µL</span>
+      </div>
+      <div class="parameter-row">
+          <span class="parameter-name">Platelets:</span>
+          <span class="parameter-value">${data.platelets || 'Not Provided'} cells/µL</span>
+      </div>
+    `;
+
+    // Update the analysis content with extracted parameters
+    document.getElementById("analysisContent").innerHTML = parametersContent;
+
+    // Display the health analysis
+    await displayHealthReportAnimated(data.data || data, {});
+
+  } catch (error) {
+    console.error("Error processing PDF:", error);
+    document.getElementById("connectingMessage").style.display = "none";
+    document.getElementById("geminiResponse").innerHTML = `
+      <p class="error">Error processing your PDF: ${error.message}</p>
+      <button type="button" onclick="handlePdfUpload()">Retry Upload</button>
+    `;
+  }
+  
+  // Prevent form submission
+  return false;
+}
+
+
+// // PDF upload functionality
+// document.addEventListener('DOMContentLoaded', function() {
+//   // Check if the upload form elements exist
+//   const uploadForm = document.getElementById('pdfUploadForm');
+//   const fileInput = document.getElementById('pdfFileInput');
+  
+//   if (uploadForm && fileInput) {
+//     uploadForm.addEventListener('submit', function(e) {
+//       e.preventDefault();
+//       e.stopPropagation(); // Stop event bubbling
+      
+//       if (fileInput.files.length === 0) {
+//         alert('Please select a PDF file to upload');
+//         return;
+//       }
+      
+//       const file = fileInput.files[0];
+//       if (!file.name.toLowerCase().endsWith('.pdf')) {  // Fixed typo here - removed the 'A'
+//         alert('Please upload a PDF file');
+//         return;
+//       }
+      
+//       // Show output section
+//       document.getElementById("outputSection").style.display = "block";
+      
+//       // Create parameter analysis section with a loading message
+//       document.getElementById("analysisContent").innerHTML = `
+//         <h3>Parameter Analysis</h3>
+//         <p>Extracting data from your PDF. Please wait...</p>
+//         <div class="gemini-response-section">
+//           <h3 id="analysisTitle">Health Analysis</h3>
+//           <p id="connectingMessage">Uploading and processing your PDF report...</p>
+//           <div id="geminiResponse" class="gemini-response">
+//             <div class="typing-indicator">
+//                 <span></span>
+//                 <span></span>
+//                 <span></span>
+//             </div>
+//           </div>
+//         </div>
+//       `;
+      
+//       // Scroll to output section
+//       $("html, body").animate(
+//         {
+//           scrollTop: $("#outputSection").offset().top - 100,
+//         },
+//         800
+//       );
+      
+//       // Send the PDF to the backend
+//       const formData = new FormData();
+//       formData.append('file', file);
+      
+//       fetch('http://localhost:5000/upload_report', {
+//         method: 'POST',
+//         body: formData,
+//       })
+//         .then(response => {
+//           if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//           }
+//           return response.json();
+//         })
+//         .then(data => {
+//           console.log("Received data from PDF processing:", data);
+          
+//           // Hide connecting message
+//           document.getElementById("connectingMessage").style.display = "none";
+          
+//           // Create parameter analysis section with extracted parameters
+//           const parametersContent = `
+//             <h3>Parameter Analysis</h3>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">Blood Pressure:</span>
+//                 <span class="parameter-value">${data.bloodPressure || 'Not Provided'} mmHg</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">Blood Glucose:</span>
+//                 <span class="parameter-value">${data.glucose || 'Not Provided'} mg/dL</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">Hemoglobin:</span>
+//                 <span class="parameter-value">${data.hemoglobin || 'Not Provided'} g/dL</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">Total Cholesterol:</span>
+//                 <span class="parameter-value">${data.cholesterol || 'Not Provided'} mg/dL</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">HDL Cholesterol:</span>
+//                 <span class="parameter-value">${data.hdl || 'Not Provided'} mg/dL</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">LDL Cholesterol:</span>
+//                 <span class="parameter-value">${data.ldl || 'Not Provided'} mg/dL</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">White Blood Cell Count:</span>
+//                 <span class="parameter-value">${data.wbc || 'Not Provided'} cells/µL</span>
+//             </div>
+//             <div class="parameter-row">
+//                 <span class="parameter-name">Platelets:</span>
+//                 <span class="parameter-value">${data.platelets || 'Not Provided'} cells/µL</span>
+//             </div>
+//           `;
+
+//           // Update the analysis content with extracted parameters
+//           document.getElementById("analysisContent").innerHTML = parametersContent;
+
+//           // Display the health analysis
+//           displayHealthReportAnimated(data.data || data, {});
+//         })
+//         .catch(error => {
+//           console.error("Error processing PDF:", error);
+//           document.getElementById("connectingMessage").style.display = "none";
+//           document.getElementById("geminiResponse").innerHTML = `
+//             <p class="error">Error processing your PDF: ${error.message}</p>
+//             <button id="retryButton" class="analyze-report-btn">Retry Upload</button>
+//           `;
+          
+//           // Add event listener for the retry button
+//           document.getElementById("retryButton").addEventListener("click", function() {
+//             uploadForm.dispatchEvent(new Event('submit'));
+//           });
+//         });
+
+//           return false;
+//         });
+//   } else {
+//     console.error("PDF upload form elements not found!");
+//   }
+// });
 
 // Analyze Parameters button functionality
 document
@@ -117,7 +363,7 @@ document
     // Clear any existing content and add parameters
     document.getElementById("analysisContent").innerHTML = parametersContent;
 
-    // Prepare data for Gemini API
+    // Prepare data for Python backend
     const healthData = {
       bloodPressure,
       glucose,
@@ -129,8 +375,8 @@ document
       platelets,
     };
 
-    // Call function to send data to Gemini API
-    sendToGeminiAPI(healthData);
+    // Call function to send data to Python backend
+    sendToPythonBackend(healthData);
 
     // Scroll to output section
     $("html, body").animate(
@@ -498,15 +744,14 @@ document
     doc.save("health-report-analysis.pdf");
   });
 
-// Function to send data to Gemini API
-function sendToGeminiAPI(healthData) {
+function sendToPythonBackend(healthData) {
   // Clear any existing analysis content
   const analysisContentDiv = document.getElementById("analysisContent");
-
+  
   // Preserve the parameter analysis section if it exists
-  const parameterContent =
+  const parameterContent = 
     analysisContentDiv.querySelector("h3:first-of-type")?.parentElement;
-
+  
   if (parameterContent) {
     // Keep only the parameter analysis part, remove any existing health analysis
     const geminiResponseSection = analysisContentDiv.querySelector(
@@ -516,124 +761,48 @@ function sendToGeminiAPI(healthData) {
       geminiResponseSection.remove();
     }
   }
-
-  // Construct the prompt for Gemini API
-  const prompt = `
-    Please provide a comprehensive health report based on the following parameters:
-    
-    Blood Pressure: ${healthData.bloodPressure} mmHg
-    Blood Glucose: ${healthData.glucose} mg/dL
-    Hemoglobin: ${healthData.hemoglobin} g/dL
-    Total Cholesterol: ${healthData.cholesterol} mg/dL
-    HDL Cholesterol: ${healthData.hdl} mg/dL
-    LDL Cholesterol: ${healthData.ldl} mg/dL
-    White Blood Cell Count: ${healthData.wbc} cells/µL
-    Platelets: ${healthData.platelets} cells/µL
-    
-    Return your response as a JSON object with the following format:
-    {
-      "overallAssessment": "Text describing the overall assessment in 3-4 lines",
-      "potentialRisks": ["Risk 1 with detailed explanation (2-3 sentences)", "Risk 2 with detailed explanation (2-3 sentences)", "Risk 3 with detailed explanation (2-3 sentences)"],
-      "possibleCauses": ["Detailed explanation of possible cause 1 (2-3 sentences)", "Detailed explanation of possible cause 2 (2-3 sentences)", "Detailed explanation of possible cause 3 (2-3 sentences)"],
-      "lifestyleChanges": ["Detailed lifestyle change recommendation 1 (2-3 sentences)", "Detailed lifestyle change recommendation 2 (2-3 sentences)", "Detailed lifestyle change recommendation 3 (2-3 sentences)"],
-      "potentialSupplements": ["Detailed supplement recommendation 1 with dosage and benefits (2-3 sentences)", "Detailed supplement recommendation 2 with dosage and benefits (2-3 sentences)", "Detailed supplement recommendation 3 with dosage and benefits (2-3 sentences)"],
-      "additionalRecommendations": ["Detailed additional recommendation 1 (2-3 sentences)", "Detailed additional recommendation 2 (2-3 sentences)", "Detailed additional recommendation 3 (2-3 sentences)"]
-    }
-    
-    For each section, provide comprehensive and detailed explanations. For the lists (potentialRisks, possibleCauses, lifestyleChanges, potentialSupplements, and additionalRecommendations), make each item 2-3 sentences long with specific and actionable information based on the provided health parameters.
-    
-    For the potentialSupplements section, include both general supplements that could be beneficial (like protein, creatine, multivitamins, etc.) as well as specific supplements that address potential issues indicated by the health parameters.
-    `;
-
-  console.log("Prompt prepared for Gemini API:", prompt);
-
-  // API key - replace with your actual key
-  const apiKey = "AIzaSyA7bnjeH7PeRaOVrvQlTvg-BImwB-TOAGg"; // Replace with your valid API key
-
+  
   // Add Gemini response section
   analysisContentDiv.innerHTML += `
-        <div class="gemini-response-section">
-            <h3 id="analysisTitle">Health Analysis</h3>
-            <p id="connectingMessage">Connecting to AI for comprehensive health analysis...</p>
-            <div id="geminiResponse" class="gemini-response">
-                <div class="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-        </div>
-    `;
-
-  // Set up request for Gemini API - Using updated endpoint
-  fetch(
-    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2048,
-        },
-      }),
-    }
-  )
+      <div class="gemini-response-section">
+          <h3 id="analysisTitle">Health Analysis</h3>
+          <p id="connectingMessage">Connecting to AI for comprehensive health analysis...</p>
+          <div id="geminiResponse" class="gemini-response">
+              <div class="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+              </div>
+          </div>
+      </div>
+  `;
+  
+  // Send the data to the Python backend using fetch
+  fetch('http://localhost:5000/analyze_health_data', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(healthData),
+  })
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
-    .then((data) => {
-      console.log("Received data from Gemini API:", data);
-
-      // Extract the response from Gemini's data structure
-      if (
-        data.candidates &&
-        data.candidates[0] &&
-        data.candidates[0].content &&
-        data.candidates[0].content.parts &&
-        data.candidates[0].content.parts[0]
-      ) {
-        const generatedText = data.candidates[0].content.parts[0].text;
-
-        // Try to parse the JSON response
-        try {
-          // Find JSON in the response (in case there's additional text)
-          const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
-          const jsonString = jsonMatch ? jsonMatch[0] : generatedText;
-          const healthReport = JSON.parse(jsonString);
-
-          // Hide connecting message
-          document.getElementById("connectingMessage").style.display = "none";
-
-          // Format and display the health report with animation
-          displayHealthReportAnimated(healthReport, healthData);
-        } catch (e) {
-          console.error("Error parsing JSON from Gemini:", e);
-          // If parsing fails, just display the text as-is
-          document.getElementById("connectingMessage").style.display = "none";
-          document.getElementById(
-            "geminiResponse"
-          ).innerHTML = `<p class="error">Error processing the response: ${e.message}</p>
-                     <p>Raw response:</p>
-                     <pre>${generatedText}</pre>`;
-        }
-      } else {
-        throw new Error("Unexpected response structure from Gemini API");
-      }
+    .then((responseData) => {
+      console.log("Received data from Python backend:", responseData);
+      
+      // Hide connecting message
+      document.getElementById("connectingMessage").style.display = "none";
+      
+      // Extract the actual health report data from the response
+      // This is the key change - we're checking if data exists in the response
+      const healthReport = responseData.data || responseData;
+      
+      // Format and display the health report with animation
+      displayHealthReportAnimated(healthReport, healthData);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -641,13 +810,13 @@ function sendToGeminiAPI(healthData) {
       document.getElementById(
         "geminiResponse"
       ).innerHTML = `<p class="error">Error connecting to the health analysis service: ${error.message}</p>
-             <button id="retryButton" class="analyze-report-btn">Retry Analysis</button>`;
-
+           <button id="retryButton" class="analyze-report-btn">Retry Analysis</button>`;
+      
       // Add event listener for the retry button
       document
         .getElementById("retryButton")
         .addEventListener("click", function () {
-          sendToGeminiAPI(healthData);
+          sendToPythonBackend(healthData);
         });
     });
 }
@@ -660,32 +829,32 @@ function displayHealthReportAnimated(healthReport, healthData) {
   const sections = [
     {
       title: "Overall Assessment",
-      content: healthReport.overallAssessment,
+      content: healthReport.overallAssessment || "No assessment available",
       type: "paragraph",
     },
     {
       title: "Potential Risks",
-      content: healthReport.potentialRisks,
+      content: healthReport.potentialRisks || [],
       type: "list",
     },
     {
       title: "Possible Causes",
-      content: healthReport.possibleCauses,
+      content: healthReport.possibleCauses || [],
       type: "list",
     },
     {
       title: "Lifestyle Changes",
-      content: healthReport.lifestyleChanges,
+      content: healthReport.lifestyleChanges || [],
       type: "list",
     },
     {
       title: "Potential Supplementation Requirements",
-      content: healthReport.potentialSupplements,
+      content: healthReport.potentialSupplements || [],
       type: "list",
     },
     {
       title: "Additional Recommendations",
-      content: healthReport.additionalRecommendations,
+      content: healthReport.additionalRecommendations || [],
       type: "list",
     },
   ];
@@ -696,47 +865,47 @@ function displayHealthReportAnimated(healthReport, healthData) {
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
-            .health-report-title {
-                font-size: 1.6em;
-                font-weight: bold;
-                color: #2c3e50;
-                margin-top: 1.5em;
-                margin-bottom: 0.7em;
-            }
-            .health-report-content {
-                margin-bottom: 1em;
-                line-height: 1.6;
-            }
-            .health-report-list {
-                list-style-type: none;
-                padding-left: 0;
-                margin-left: 0;
-            }
-            .health-report-list-item {
-                margin-bottom: 1em;
-                position: relative;
-                padding-left: 1.5em;
-                line-height: 1.5;
-                text-indent: 0;
-                display: block;
-            }
-            .health-report-list-item::before {
-                content: "•";
-                color: #3498db;
-                position: absolute;
-                left: 0;
-                top: 0;
-            }
-            .typing {
-                border-right: 2px solid #3498db;
-                animation: blink 0.7s step-end infinite;
-                white-space: pre-wrap;
-            }
-            @keyframes blink {
-                from, to { border-color: transparent }
-                50% { border-color: #3498db; }
-            }
-        `;
+        .health-report-title {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 1.5em;
+            margin-bottom: 0.7em;
+        }
+        .health-report-content {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+        .health-report-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-left: 0;
+        }
+        .health-report-list-item {
+            margin-bottom: 1em;
+            position: relative;
+            padding-left: 1.5em;
+            line-height: 1.5;
+            text-indent: 0;
+            display: block;
+        }
+        .health-report-list-item::before {
+            content: "•";
+            color: #3498db;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .typing {
+            border-right: 2px solid #3498db;
+            animation: blink 0.7s step-end infinite;
+            white-space: pre-wrap;
+        }
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #3498db; }
+        }
+    `;
     document.head.appendChild(style);
   }
 
@@ -770,7 +939,7 @@ function displayHealthReportAnimated(healthReport, healthData) {
         }
 
         // Send request again to regenerate
-        sendToGeminiAPI(healthData);
+        sendToPythonBackend(healthData);
       });
 
       return;
@@ -800,14 +969,20 @@ function displayHealthReportAnimated(healthReport, healthData) {
         currentElement = null;
         currentListIndex = 0;
 
-        // Create the first list item only if there are items
-        if (section.content && section.content.length > 0) {
+        // Check if content is a valid array and has items
+        if (Array.isArray(section.content) && section.content.length > 0) {
           currentElement = document.createElement("li");
           currentElement.className = "health-report-list-item typing";
           currentListContainer.appendChild(currentElement);
           characterIndex = 0;
         } else {
-          // If no items, move to next section
+          // If no items or invalid data, add a placeholder message
+          const placeholderItem = document.createElement("li");
+          placeholderItem.className = "health-report-list-item";
+          placeholderItem.textContent = "No data available";
+          currentListContainer.appendChild(placeholderItem);
+          
+          // Move to next section
           sectionIndex++;
           setTimeout(typeSection, 200);
           return;
@@ -817,8 +992,9 @@ function displayHealthReportAnimated(healthReport, healthData) {
 
     if (section.type === "paragraph") {
       // Type paragraph content character by character
-      if (characterIndex < section.content.length) {
-        currentElement.textContent += section.content.charAt(characterIndex);
+      const content = String(section.content || ""); // Ensure content is a string
+      if (characterIndex < content.length) {
+        currentElement.textContent += content.charAt(characterIndex);
         characterIndex++;
         setTimeout(typeSection, 5 + Math.random() * 10); // Faster typing speed
       } else {
@@ -830,11 +1006,12 @@ function displayHealthReportAnimated(healthReport, healthData) {
       }
     } else if (section.type === "list") {
       // Handle list items
-      if (currentListIndex < section.content.length) {
+      if (Array.isArray(section.content) && currentListIndex < section.content.length) {
+        const item = String(section.content[currentListIndex] || ""); // Ensure item is a string
+        
         // Type this list item
-        if (characterIndex < section.content[currentListIndex].length) {
-          currentElement.textContent +=
-            section.content[currentListIndex].charAt(characterIndex);
+        if (characterIndex < item.length) {
+          currentElement.textContent += item.charAt(characterIndex);
           characterIndex++;
           setTimeout(typeSection, 5 + Math.random() * 10); // Faster typing speed
         } else {
@@ -856,6 +1033,10 @@ function displayHealthReportAnimated(healthReport, healthData) {
 
           setTimeout(typeSection, 150);
         }
+      } else {
+        // Something's wrong with the data, move to the next section
+        sectionIndex++;
+        setTimeout(typeSection, 200);
       }
     }
   }

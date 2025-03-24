@@ -75,16 +75,15 @@
 
           <h3 class="section-subtitle">Upload Your Report</h3>
           <div class="report-card">
-            <form id="uploadForm">
+            <form id="pdfUploadForm" onsubmit="event.preventDefault();">
               <div class="form-group">
-                <label for="reportFile">Upload Health Report (PDF/Image)</label>
-                <input type="file" class="form-control-file" id="reportFile">
-                <small class="form-text text-muted" style="color: rgba(255,255,255,0.6) !important;">Supported formats:
-                  PDF, JPG,
-                  PNG</small>
+                <label for="pdfFileInput">Upload Health Report (PDF)</label>
+                <input type="file" class="form-control-file" id="pdfFileInput" accept=".pdf">
+                <small class="form-text text-muted" style="color: rgba(255,255,255,0.6) !important;">
+                  Supported formats: PDF
+                </small>
               </div>
-              <button type="button" id="uploadAnalyzeBtn" class="analyze-report-btn">Upload &
-                Analyze</button>
+              <button type="button" onclick="handlePdfUpload(); return false;" class="analyze-report-btn">Upload & Analyze</button>
             </form>
           </div>
 
