@@ -1,3 +1,185 @@
+/* Section Titles */
+.section-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.section-description {
+    font-size: 16px;
+    color: #fff;
+    text-align: left;
+    margin-bottom: 30px;
+    max-width: 800px;
+
+}
+
+/* Upload Section */
+.upload-section {
+    padding: 150px 0 50px;
+    min-height: 100vh;
+    position: relative;
+}
+
+.upload-container {
+    background: rgba(12, 12, 20, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    border: 1px solid rgba(94, 23, 235, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.upload-container h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.upload-box {
+    border: 2px dashed rgba(94, 23, 235, 0.5);
+    border-radius: 10px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+    border-color: #5e17eb;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.upload-box i {
+    font-size: 40px;
+    color: #5e17eb;
+    margin-bottom: 15px;
+}
+
+.upload-box p {
+    color: #a1c4fd;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.upload-box input[type="file"] {
+    display: none;
+}
+
+.upload-box label {
+    background: linear-gradient(135deg, #5e17eb, #9644fd);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-box label:hover {
+    background: linear-gradient(135deg, #4a12b9, #5e17eb);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(94, 23, 235, 0.5);
+}
+
+/* Manual Entry Section */
+.manual-entry-section {
+    padding: 30px 0;
+    position: relative;
+}
+
+.manual-entry-container {
+    background: rgba(12, 12, 20, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    border: 1px solid rgba(94, 23, 235, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.manual-entry-container h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.form-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(94, 23, 235, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #5e17eb;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.analyze-report-btn {
+    background: linear-gradient(135deg, #5e17eb, #9644fd);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: none;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.analyze-report-btn:hover {
+    background: linear-gradient(135deg, #4a12b9, #5e17eb);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(94, 23, 235, 0.5);
+}
+
+.analyze-report-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.additional-text-section {
+  padding: 30px 0 60px; /* Increase padding-bottom from 60px to 100px */
+}
+
 /* Report page specific styles */
 .report-section {
   padding: 160px 0 80px;
@@ -212,25 +394,7 @@
   margin: 20px 0 10px;
 }
 
-.status-indicator {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
 
-.status-normal {
-  background-color: #28a745;
-}
-
-.status-warning {
-  background-color: #ffc107;
-}
-
-.status-alert {
-  background-color: #dc3545;
-}
 
 .parameter-row {
   display: flex;

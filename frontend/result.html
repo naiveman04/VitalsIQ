@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Health Report Analysis - Vitals IQ</title>
+
+    <!-- Same CSS and library imports as about.html -->
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+    />
+    <link rel="stylesheet" href="Styling/landing.css" />
+    <link rel="stylesheet" href="Styling/about.css" />
+
+    <!-- Inline styles specific to result.html -->
+    <style>
+        /* Output section styling */
+        .result-section {
+            padding: 160px 0 80px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .output-container {
+            background: #ffffff; /* Change from rgba to solid white */
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(94, 23, 235, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .parameter-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Darker border for better visibility */
+            font-size: 16px;
+        }
+
+        .parameter-name {
+            font-weight: 500;
+            color: #333; /* Change from white to dark text */
+        }
+
+        .parameter-value {
+            color: #5e17eb; /* Change from light blue to theme color */
+        }
+
+        .gemini-response-section {
+            margin-top: 30px;
+        }
+
+        .gemini-response-section h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;  /* Change from white to dark text */
+            margin-bottom: 15px;
+        }
+
+        .gemini-response {
+            background: #ffffff;  /* Change to solid white */
+            padding: 20px;
+            border-radius: 10px;
+            color: #333;  /* Ensure text is visible */
+            border: 1px solid rgba(94, 23, 235, 0.3);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #5e17eb;
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 16px;
+        }
+
+        .analyze-report-btn {
+            background: linear-gradient(135deg, #5e17eb, #9644fd);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .analyze-report-btn:hover {
+            background: linear-gradient(135deg, #4a12b9, #5e17eb);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(94, 23, 235, 0.5);
+        }
+
+        /* Health report styles (from report.js) */
+        .health-report-title {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #333; /* Change from white to dark text */
+            margin-top: 1.5em;
+            margin-bottom: 0.7em;
+        }
+
+        .health-report-content {
+            margin-bottom: 1em;
+            line-height: 1.6;
+            color: #333; /* Change from white to dark text */
+        }
+
+        .health-report-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .health-report-list-item {
+            margin-bottom: 1em;
+            position: relative;
+            padding-left: 1.5em;
+            line-height: 1.5;
+            text-indent: 0;
+            display: block;
+            color: #333; /* Change from white to dark text */
+        }
+
+        .health-report-list-item::before {
+            content: "•";
+            color: #5e17eb;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .typing {
+            border-right: 2px solid #5e17eb;
+            animation: blink 0.7s step-end infinite;
+            white-space: pre-wrap;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #5e17eb; }
+        }
+
+        /* Buttons container */
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        /* Copy notification */
+        #copyAlert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(94, 23, 235, 0.9);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        #copyAlert.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <div class="scroll-to-top">
+        <i class="fa fa-angle-up"></i>
+    </div>
+
+    <!-- Header Section Start - Same as about.html -->
+    <div class="header_section">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="logo">
+                <a href="landing.html"><img src="images/Logo2.png" alt="Logo" /></a>
+            </div>
+
+            <!-- About Us button -->
+            <div class="d-none d-md-block">
+                <a href="report.html" class="analyze-btn">Analyze</a>
+                <a href="about.html" class="about-us-btn">About Us</a>
+            </div>
+
+            <!-- Mobile Menu Icon -->
+            <span class="d-md-none" onclick="openNav()">
+                <i class="fa fa-bars fa-lg" style="color: #5e17eb"></i>
+            </span>
+        </div>
+        <!-- Overlay Navigation for Mobile -->
+        <div id="myNav" class="overlay">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <div class="overlay-content">
+                <a href="landing.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="#">Services</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </div>
+    <!-- Header Section End -->
+
+    <!-- Result Section Start -->
+    <div class="result-section">
+        <div class="glow-accent pulse-animation" style="top: 30%; left: 5%"></div>
+        <div class="glow-accent pulse-animation" style="bottom: 30%; right: 5%"></div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="output-container">
+                        <div id="analysisContent">
+                            <h3>Parameter Analysis</h3>
+                            <p>Extracting data from your PDF. Please wait...</p>
+                            <div class="gemini-response-section">
+                                <h3 id="analysisTitle">Health Analysis</h3>
+                                <p id="connectingMessage">Uploading and processing your PDF report...</p>
+                                <div id="geminiResponse" class="gemini-response">
+                                    <div class="typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Action buttons -->
+                        <div class="action-buttons">
+                            <button id="copyBtn" class="analyze-report-btn">Copy Results</button>
+                            <button id="downloadPdfBtn" class="analyze-report-btn">Download PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Result Section End -->
+
+    <!-- Footer Section Start - Same as about.html -->
+    <div class="footer_section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                    <h2 class="useful_text">Resources</h2>
+                    <ul>
+                        <li>
+                            <a href="#" class="resource-link">
+                                What we do
+                                <div class="resource-popup">
+                                    <span class="popup-text">
+                                        We provide comprehensive health analysis and recommendations based on your medical reports to help you take control of your well-being.
+                                    </span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="resource-link">
+                                Media
+                                <div class="resource-popup">
+                                    <span class="popup-text">
+                                        Browse our collection of health articles, videos, and infographics designed to educate and empower you on your health journey.
+                                    </span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+                    <h2 class="useful_text">About</h2>
+                    <p class="footer_text">
+                        Discover our mission to enhance your health and quality of life with timely checkups and expert advice.
+                    </p>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="300">
+                    <h2 class="useful_text">Contact Us</h2>
+                    <ul class="location_text">
+                        <li>
+                            <i class="fa fa-map-marker" aria-hidden="true"></i> Pune, Maharashtra
+                        </li>
+                        <li>
+                            <i class="fa fa-phone" aria-hidden="true"></i> +91 9502772952
+                        </li>
+                        <li>
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                            <a href="mailto:vedantnarawadkar@gmail.com">vedantnarawadkar@gmail.com</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="400">
+                    <h2 class="useful_text">Countries</h2>
+                    <img src="images/map.png" alt="Map" class="img-fluid" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer Section End -->
+
+    <!-- Copyright Section Start -->
+    <div class="copyright_section">
+        <div class="container">
+            <p>© 2025 All Rights Reserved.</p>
+        </div>
+    </div>
+    <!-- Copyright Section End -->
+
+    <!-- Copy Notification -->
+    <div id="copyAlert">Results copied to clipboard!</div>
+
+    <!-- Javascript Files -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+    // Initialize AOS animations
+    AOS.init();
+
+    // Page loader
+    $(window).on("load", function () {
+        setTimeout(function () {
+            $(".page-loader").addClass("fade-out");
+        }, 1000);
+    });
+
+    // Toggle overlay navigation
+    function openNav() {
+        document.getElementById("myNav").style.width = "100%";
+        setTimeout(function () {
+            document.getElementById("myNav").classList.add("open");
+        }, 100);
+    }
+
+    function closeNav() {
+        document.getElementById("myNav").classList.remove("open");
+        setTimeout(function () {
+            document.getElementById("myNav").style.width = "0%";
+        }, 300);
+    }
+
+    // Sticky header
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $(".header_section").addClass("scrolled");
+            $(".scroll-to-top").addClass("active");
+        } else {
+            $(".header_section").removeClass("scrolled");
+            $(".scroll-to-top").removeClass("active");
+        }
+    });
+
+    // Scroll to top functionality
+    $(".scroll-to-top").click(function () {
+        $("html, body").animate({ scrollTop: 0 }, 800);
+        return false;
+    });
+
+    // Fetch and display results based on input type
+    async function fetchResults() {
+        const inputType = localStorage.getItem("inputType");
+
+        if (inputType === "file") {
+            // Handle file upload
+            try {
+                console.log("Fetching results from backend for file upload");
+                const response = await fetch("http://localhost:5000/upload_report", {
+                    method: "POST",
+                    body: new FormData(document.getElementById("tempForm")),
+                    signal: new AbortController().signal,
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log("Response data:", data);
+
+                // Hide connecting message
+                document.getElementById("connectingMessage").style.display = "none";
+
+                // Update the analysis content with extracted parameters
+                const parametersContent = `
+                    <h3>Parameter Analysis</h3>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Blood Pressure:</span>
+                        <span class="parameter-value">${data.bloodPressure || "Not Provided"} mmHg</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Blood Glucose:</span>
+                        <span class="parameter-value">${data.glucose || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Hemoglobin:</span>
+                        <span class="parameter-value">${data.hemoglobin || "Not Provided"} g/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Total Cholesterol:</span>
+                        <span class="parameter-value">${data.cholesterol || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">HDL Cholesterol:</span>
+                        <span class="parameter-value">${data.hdl || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">LDL Cholesterol:</span>
+                        <span class="parameter-value">${data.ldl || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">White Blood Cell Count:</span>
+                        <span class="parameter-value">${data.wbc || "Not Provided"} cells/µL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Platelets:</span>
+                        <span class="parameter-value">${data.platelets || "Not Provided"} cells/µL</span>
+                    </div>
+                `;
+                document.getElementById("analysisContent").innerHTML = parametersContent;
+
+                // Display the health analysis
+                await displayHealthReportAnimated(data.data || data, {});
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById("connectingMessage").style.display = "none";
+                document.getElementById("geminiResponse").innerHTML = `
+                    <p class="error">Error processing your PDF: ${error.message}</p>
+                    <button class="analyze-report-btn" onclick="fetchResults()">Retry Upload</button>
+                `;
+            }
+        } else if (inputType === "manual") {
+            // Handle manual entry
+            try {
+                // Retrieve the health data from localStorage
+                const healthData = JSON.parse(localStorage.getItem("manualHealthData"));
+                if (!healthData) {
+                    throw new Error("No manual health data found.");
+                }
+
+                 // Log the data for debugging
+                console.log("Health Data from localStorage:", healthData);
+
+                // Display the parameters from the manual entry
+                const parametersContent = `
+                    <h3>Parameter Analysis</h3>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Blood Pressure:</span>
+                        <span class="parameter-value">${healthData.bloodPressure || "Not Provided"} mmHg</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Blood Glucose:</span>
+                        <span class="parameter-value">${healthData.glucose || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Hemoglobin:</span>
+                        <span class="parameter-value">${healthData.hemoglobin || "Not Provided"} g/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Total Cholesterol:</span>
+                        <span class="parameter-value">${healthData.cholesterol || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">HDL Cholesterol:</span>
+                        <span class="parameter-value">${healthData.hdl || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">LDL Cholesterol:</span>
+                        <span class="parameter-value">${healthData.ldl || "Not Provided"} mg/dL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">White Blood Cell Count:</span>
+                        <span class="parameter-value">${healthData.wbc || "Not Provided"} cells/µL</span>
+                    </div>
+                    <div class="parameter-row">
+                        <span class="parameter-name">Platelets:</span>
+                        <span class="parameter-value">${healthData.platelets || "Not Provided"} cells/µL</span>
+                    </div>
+                `;
+                document.getElementById("analysisContent").innerHTML = `
+                ${parametersContent}
+                <div class="gemini-response-section">
+                    <h3 id="analysisTitle">Health Analysis</h3>
+                    <p id="connectingMessage">Processing your health data...</p>
+                    <div id="geminiResponse" class="gemini-response">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+                const response = await fetch("http://localhost:5000/analyze_health_data", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(healthData),
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const result = await response.json();
+                console.log("Received health analysis:", result);
+
+                // Hide connecting message if it exists
+                const connectingMessage = document.getElementById("connectingMessage");
+                if (connectingMessage) {
+                    connectingMessage.style.display = "none";
+                }
+
+                if (!result.success) {
+                    throw new Error(result.error || "Failed to analyze health data");
+                }        
+    
+                // Display the analysis
+                await displayHealthReportAnimated(result.data, healthData);
+            
+
+            } catch (error) {
+                console.error("Fetch error for manual entry:", error);
+                document.getElementById("connectingMessage").style.display = "none";
+                document.getElementById("geminiResponse").innerHTML = `
+                    <p class="error">Error: ${error.message}</p>
+                    <p class="error">Please try again or contact support if the issue persists.</p>
+                    <button class="analyze-report-btn" onclick="fetchResults()">Retry Analysis</button>
+                `;
+            }
+
+            // Hide connecting message if it exists
+            const connectingMessage = document.getElementById("connectingMessage");
+            if (connectingMessage) {
+                connectingMessage.style.display = "none";
+            }
+        } else {
+            document.getElementById("analysisContent").innerHTML = `
+                <p class="error">No input data found. Please upload a PDF or enter data manually from the main page.</p>
+            `;
+        }
+    }
+
+    // Create a temporary form for file uploads
+    const form = document.createElement("form");
+    form.id = "tempForm";
+    form.style.display = "none";
+    document.body.appendChild(form);
+
+    // Determine the input type and proceed accordingly
+    const inputType = localStorage.getItem("inputType");
+    if (inputType === "file") {
+        // Retrieve the file data from localStorage
+        const fileData = localStorage.getItem("uploadedFile");
+        if (fileData) {
+            const file = dataURLtoFile(fileData, "uploaded.pdf");
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.name = "file";
+            fileInput.files = dataTransfer.files;
+            form.appendChild(fileInput);
+            fetchResults();
+        } else {
+            document.getElementById("analysisContent").innerHTML = `
+                <p class="error">No file data found. Please upload a PDF from the main page.</p>
+            `;
+        }
+    } else if (inputType === "manual") {
+        // For manual entry, just call fetchResults to retrieve the data
+        fetchResults();
+    } else {
+        document.getElementById("analysisContent").innerHTML = `
+            <p class="error">No input data found. Please upload a PDF or enter data manually from the main page.</p>
+        `;
+    }
+
+    // Helper function to convert data URL to File
+    function dataURLtoFile(dataurl, filename) {
+        const arr = dataurl.split(",");
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    // Clean up localStorage after use
+    localStorage.removeItem("uploadedFile");
+    localStorage.removeItem("manualHealthData");
+    localStorage.removeItem("inputType");
+
+    // Display health report with animation (same as before)
+    function displayHealthReportAnimated(healthReport, healthData) {
+        console.log("Displaying health report:", healthReport);
+        const geminiResponse = document.getElementById("geminiResponse");
+        geminiResponse.innerHTML = ""; // Clear loading indicator
+
+        // Make sure healthReport contains the expected fields
+        if (!healthReport || typeof healthReport !== 'object') {
+            console.error("Invalid health report data:", healthReport);
+            geminiResponse.innerHTML = `
+                <p class="error">Error: Invalid health report data received</p>
+            `;
+            return;
+        }
+
+
+        // Create sections with proper formatting
+        const sections = [
+            {
+                title: "Overall Assessment",
+                content: healthReport.overallAssessment || "No assessment available",
+                type: "paragraph",
+            },
+            {
+                title: "Potential Risks",
+                content: healthReport.potentialRisks || [],
+                type: "list",
+            },
+            {
+                title: "Possible Causes",
+                content: healthReport.possibleCauses || [],
+                type: "list",
+            },
+            {
+                title: "Lifestyle Changes",
+                content: healthReport.lifestyleChanges || [],
+                type: "list",
+            },
+            {
+                title: "Potential Supplementation Requirements",
+                content: healthReport.potentialSupplements || [],
+                type: "list",
+            },
+            {
+                title: "Additional Recommendations",
+                content: healthReport.additionalRecommendations || [],
+                type: "list",
+            },
+        ];
+
+        // Create container for animated content
+        const contentContainer = document.createElement("div");
+        contentContainer.className = "health-report-container";
+        geminiResponse.appendChild(contentContainer);
+
+        // Type each section one by one
+        let sectionIndex = 0;
+        let characterIndex = 0;
+        let currentElement = null;
+        let currentListIndex = 0;
+        let currentListContainer = null;
+
+        function typeSection() {
+            if (sectionIndex >= sections.length) {
+                // All sections typed, add regenerate button
+                const regenerateBtn = document.createElement("button");
+                regenerateBtn.className = "analyze-report-btn";
+                regenerateBtn.textContent = "Regenerate";
+                geminiResponse.appendChild(regenerateBtn);
+
+                regenerateBtn.addEventListener("click", function () {
+                    // Remove all health analysis content completely and generate a new one
+                    const geminiResponseSection = document.querySelector(".gemini-response-section");
+                    if (geminiResponseSection) {
+                        geminiResponseSection.remove();
+                    }
+
+                    // Add loading state back
+                    document.getElementById("analysisContent").innerHTML += `
+                        <div class="gemini-response-section">
+                            <h3 id="analysisTitle">Health Analysis</h3>
+                            <p id="connectingMessage">Connecting to AI for comprehensive health analysis...</p>
+                            <div id="geminiResponse" class="gemini-response">
+                                <div class="typing-indicator">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Send request again to regenerate
+                    fetchResults();
+                });
+
+                return;
+            }
+
+            const section = sections[sectionIndex];
+
+            if (!currentElement) {
+                // Create title element
+                const titleElement = document.createElement("h4");
+                titleElement.className = "health-report-title";
+                titleElement.textContent = section.title;
+                contentContainer.appendChild(titleElement);
+
+                // Create content container based on type
+                if (section.type === "paragraph") {
+                    currentElement = document.createElement("p");
+                    currentElement.className = "health-report-content typing";
+                    contentContainer.appendChild(currentElement);
+                } else if (section.type === "list") {
+                    // Create a container for this section's list items
+                    currentListContainer = document.createElement("ul");
+                    currentListContainer.className = "health-report-list";
+                    contentContainer.appendChild(currentListContainer);
+
+                    // Start with the first list item
+                    currentElement = null;
+                    currentListIndex = 0;
+
+                    // Check if content is a valid array and has items
+                    if (Array.isArray(section.content) && section.content.length > 0) {
+                        currentElement = document.createElement("li");
+                        currentElement.className = "health-report-list-item typing";
+                        currentListContainer.appendChild(currentElement);
+                        characterIndex = 0;
+                    } else {
+                        // If no items or invalid data, add a placeholder message
+                        const placeholderItem = document.createElement("li");
+                        placeholderItem.className = "health-report-list-item";
+                        placeholderItem.textContent = "No data available";
+                        currentListContainer.appendChild(placeholderItem);
+
+                        // Move to next section
+                        sectionIndex++;
+                        setTimeout(typeSection, 200);
+                        return;
+                    }
+                }
+            }
+
+            if (section.type === "paragraph") {
+                // Type paragraph content character by character
+                const content = String(section.content || "");
+                if (characterIndex < content.length) {
+                    currentElement.textContent += content.charAt(characterIndex);
+                    characterIndex++;
+                    setTimeout(typeSection, 5 + Math.random() * 10);
+                } else {
+                    // Move to next section
+                    currentElement.classList.remove("typing");
+                    currentElement = null;
+                    sectionIndex++;
+                    setTimeout(typeSection, 200);
+                }
+            } else if (section.type === "list") {
+                // Handle list items
+                if (Array.isArray(section.content) && currentListIndex < section.content.length) {
+                    const item = String(section.content[currentListIndex] || "");
+                    
+                    // Type this list item
+                    if (characterIndex < item.length) {
+                        currentElement.textContent += item.charAt(characterIndex);
+                        characterIndex++;
+                        setTimeout(typeSection, 5 + Math.random() * 10);
+                    } else {
+                        // Move to next list item
+                        currentElement.classList.remove("typing");
+                        currentListIndex++;
+
+                        // Create next list item if available
+                        if (currentListIndex < section.content.length) {
+                            currentElement = document.createElement("li");
+                            currentElement.className = "health-report-list-item typing";
+                            currentListContainer.appendChild(currentElement);
+                            characterIndex = 0;
+                        } else {
+                            // No more list items, prepare to move to next section
+                            currentElement = null;
+                            sectionIndex++;
+                        }
+
+                        setTimeout(typeSection, 150);
+                    }
+                } else {
+                    // Something's wrong with the data, move to the next section
+                    sectionIndex++;
+                    setTimeout(typeSection, 200);
+                }
+            }
+        }
+
+        // Start the typing animation
+        setTimeout(typeSection, 300);
+    }
+
+    // Copy button functionality
+    document.getElementById("copyBtn").addEventListener("click", function () {
+        const content = document.getElementById("analysisContent").innerText;
+        navigator.clipboard.writeText(content).then(function () {
+            // Show copy notification
+            const copyAlert = document.getElementById("copyAlert");
+            copyAlert.classList.add("show");
+            setTimeout(function () {
+                copyAlert.classList.remove("show");
+            }, 2000);
+        });
+    });
+
+    // Download PDF functionality
+    document.getElementById("downloadPdfBtn").addEventListener("click", function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF("p", "mm", "a4");
+
+        // Show loading message
+        const loadingMessage = document.createElement("div");
+        loadingMessage.className = "loading-pdf";
+        loadingMessage.innerHTML = "<p>Generating PDF, please wait...</p>";
+        loadingMessage.style.position = "fixed";
+        loadingMessage.style.top = "50%";
+        loadingMessage.style.left = "50%";
+        loadingMessage.style.transform = "translate(-50%, -50%)";
+        loadingMessage.style.background = "rgba(0,0,0,0.7)";
+        loadingMessage.style.color = "white";
+        loadingMessage.style.padding = "20px";
+        loadingMessage.style.borderRadius = "5px";
+        loadingMessage.style.zIndex = "1000";
+        document.body.appendChild(loadingMessage);
+
+        // Setup PDF dimensions
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        let y = 30;
+        let pageCount = 1;
+
+        // Extract text content
+        const content = document.getElementById("analysisContent");
+
+        // Add title
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text("Your Health Report Analysis", pageWidth / 2, 20, { align: "center" });
+
+        // Define parameters based on variable names from the form
+        const parameterNames = {
+            "Blood Pressure:": "bloodPressure",
+            "Blood Glucose:": "glucose",
+            "Hemoglobin:": "hemoglobin",
+            "Total Cholesterol:": "cholesterol",
+            "HDL Cholesterol:": "hdl",
+            "LDL Cholesterol:": "ldl",
+            "White Blood Cell Count:": "wbc",
+            "Platelets:": "platelets"
+        };
+
+        // Track processed list items to avoid duplicates
+        const processedListItems = new Set();
+        
+        // Track if parameters section has been processed
+        let parametersProcessed = false;
+
+        // Define known subtitles that should be formatted specially
+        const knownSubtitles = [
+            "Recommendations:",
+            "Risk Factors:",
+            "Potential Risks:",
+            "Analysis:",
+            "Summary:",
+            "Interpretation:",
+            "Treatment Options:",
+            "Next Steps:",
+            "Conclusion:",
+            "Key Findings:",
+            "Diagnosis:",
+            "Health Status:",
+            "Medical Advice:"
+        ];
+
+        // Extract and add sections recursively
+        function addContentToPDF(element, indent = 0, processChildNodes = true) {
+            if (!element) return;
+
+            // Process this element
+            if (element.nodeType === Node.TEXT_NODE) {
+                const text = element.textContent.trim();
+                if (text) {
+                    // Check if we need a new page
+                    if (y > pageHeight - 20) {
+                        doc.addPage();
+                        y = 20;
+                        pageCount++;
+                    }
+
+                    // Calculate available width for text (accounting for margins and indentation)
+                    const maxWidth = pageWidth - (2 * margin) - indent;
+                    
+                    // Split text to fit within page width
+                    const lines = doc.splitTextToSize(text, maxWidth);
+                    
+                    for (let i = 0; i < lines.length; i++) {
+                        // Check if we need a new page for each line
+                        if (y > pageHeight - 20) {
+                            doc.addPage();
+                            y = 20;
+                            pageCount++;
+                        }
+                        
+                        doc.text(lines[i], margin + indent, y);
+                        y += 7;
+                    }
+                }
+            } else if (element.nodeType === Node.ELEMENT_NODE) {
+                // Handle based on element type
+                if (
+                    element.tagName === "H1" ||
+                    element.tagName === "H2" ||
+                    element.tagName === "H3" ||
+                    element.classList.contains("health-report-title")
+                ) {
+                    // Check if we need a new page
+                    if (y > pageHeight - 30) {
+                        doc.addPage();
+                        y = 20;
+                        pageCount++;
+                    }
+
+                    // Add spacing before headings (except at top of page)
+                    if (y > 30) y += 10;
+
+                    // Heading styles based on level
+                    doc.setFont("helvetica", "bold");
+                    const fontSize = element.tagName === "H1" ? 16 : element.tagName === "H2" ? 14 : 12;
+                    doc.setFontSize(fontSize);
+
+                    // Get heading text
+                    const headingText = element.textContent.trim();
+                    
+                    // Calculate available width for heading
+                    const maxWidth = pageWidth - (2 * margin);
+                    
+                    // Split heading text if needed
+                    const lines = doc.splitTextToSize(headingText, maxWidth);
+                    
+                    // Add each line of the heading
+                    for (let i = 0; i < lines.length; i++) {
+                        doc.text(lines[i], margin, y);
+                        y += 8;
+                    }
+                    
+                    // Add extra space after heading
+                    y += 5;
+
+                    // Reset font
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(12);
+                    
+                    // Mark parameters as processed if this is the parameters heading
+                    if (headingText === "Parameter Analysis") {
+                        parametersProcessed = true;
+                    }
+                } else if (
+                    element.tagName === "DIV" &&
+                    (element.classList.contains("parameter-row") ||
+                     element.getAttribute("data-param"))
+                ) {
+                    // This is a parameter row, extract label and value
+                    let label = "";
+                    let value = "";
+
+                    // Try to get label and value from children
+                    const labelElement =
+                        element.querySelector(".parameter-name") ||
+                        element.querySelector(".parameter-label") ||
+                        element.querySelector("[data-label]");
+                    const valueElement =
+                        element.querySelector(".parameter-value") ||
+                        element.querySelector("[data-value]");
+
+                    if (labelElement) label = labelElement.textContent.trim();
+                    if (valueElement) value = valueElement.textContent.trim();
+
+                    // Check if we need a new page
+                    if (y > pageHeight - 20) {
+                        doc.addPage();
+                        y = 20;
+                        pageCount++;
+                    }
+
+                    // Add parameter label (left-aligned)
+                    doc.setFont("helvetica", "normal");
+                    doc.text(label, margin, y);
+
+                    // Add value (right-aligned)
+                    if (value) {
+                        doc.setFont("helvetica", "bold");
+                        doc.text(value, pageWidth - margin, y, { align: "right" });
+                    }
+
+                    y += 8;
+                    doc.setFont("helvetica", "normal");
+                } else if (element.tagName === "UL" || element.tagName === "OL") {
+                    // Increase indent for list items
+                    indent += 5;
+                } else if (element.tagName === "LI") {
+                    // Generate a unique ID for this list item to avoid duplicates
+                    const itemText = element.textContent.trim();
+                    const itemId = itemText.substring(0, 50); // First 50 chars as ID
+                    
+                    // Skip if already processed
+                    if (!processedListItems.has(itemId)) {
+                        processedListItems.add(itemId);
+                        
+                        // Check if we need a new page
+                        if (y > pageHeight - 20) {
+                            doc.addPage();
+                            y = 20;
+                            pageCount++;
+                        }
+
+                        // Add bullet point
+                        doc.text("•", margin + indent - 5, y);
+
+                        // Handle text wrapping to prevent content going outside PDF limits
+                        const maxWidth = pageWidth - (2 * margin) - indent - 5;
+                        const lines = doc.splitTextToSize(itemText, maxWidth);
+
+                        // Add each line of text
+                        for (let i = 0; i < lines.length; i++) {
+                            if (i === 0) {
+                                // First line is already positioned with the bullet
+                                doc.text(lines[i], margin + indent, y);
+                            } else {
+                                // Check for new page for subsequent lines
+                                if (y + 7 > pageHeight - 20) {
+                                    doc.addPage();
+                                    y = 20;
+                                    pageCount++;
+                                }
+                                y += 7;
+                                doc.text(lines[i], margin + indent, y);
+                            }
+                        }
+
+                        // Add space after list item
+                        y += 10;
+                    }
+                    
+                    // For list items, we don't process child nodes separately since we're getting the text content
+                    processChildNodes = false;
+                } else if (element.tagName === "P") {
+                    // Check if we need a new page
+                    if (y > pageHeight - 20) {
+                        doc.addPage();
+                        y = 20;
+                        pageCount++;
+                    }
+
+                    // Get paragraph text
+                    const paraText = element.textContent.trim();
+                    if (paraText) {
+                        // Check if this paragraph is a known subtitle
+                        const isSubtitle = knownSubtitles.some(subtitle => 
+                            paraText === subtitle || paraText.startsWith(subtitle)
+                        );
+                        
+                        // Handle text wrapping
+                        const maxWidth = pageWidth - (2 * margin) - indent;
+                        const lines = doc.splitTextToSize(paraText, maxWidth);
+                        
+                        if (isSubtitle) {
+                            // Add extra space before subtitle
+                            y += 5;
+                            
+                            // Format subtitle in bold and larger
+                            doc.setFont("helvetica", "bold");
+                            doc.setFontSize(14);
+                        } else {
+                            doc.setFont("helvetica", "normal");
+                            doc.setFontSize(12);
+                        }
+
+                        // Add each line of text
+                        for (let i = 0; i < lines.length; i++) {
+                            if (y > pageHeight - 20) {
+                                doc.addPage();
+                                y = 20;
+                                pageCount++;
+                            }
+
+                            doc.text(lines[i], margin + indent, y);
+                            y += 7;
+                        }
+
+                        // Reset font after subtitle
+                        if (isSubtitle) {
+                            doc.setFont("helvetica", "normal");
+                            doc.setFontSize(12);
+                            
+                            // Add extra space after subtitle
+                            y += 3;
+                        } else {
+                            // Regular paragraph spacing
+                            y += 5;
+                        }
+                    }
+                }
+
+                // Process children elements only if this element isn't a parameter row
+                // and we are supposed to process child nodes
+                if (
+                    processChildNodes &&
+                    !(
+                        element.classList &&
+                        (element.classList.contains("parameter-row") || 
+                        element.hasAttribute("data-param"))
+                    )
+                ) {
+                    for (let i = 0; i < element.childNodes.length; i++) {
+                        addContentToPDF(element.childNodes[i], indent, true);
+                    }
+                }
+
+                // Reset indent after lists
+                if (element.tagName === "UL" || element.tagName === "OL") {
+                    indent -= 5;
+                }
+            }
+        }
+
+        // Start extraction with main content section
+        addContentToPDF(content);
+
+        // Add page numbers
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Page ${i} of ${pageCount}`, pageWidth - 30, pageHeight - 10);
+        }
+
+        // Remove loading message
+        document.body.removeChild(loadingMessage);
+
+        // Save the PDF
+        doc.save("health-report-analysis.pdf");
+    });
+    </script>
+
+</body>
+</html>
